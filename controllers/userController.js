@@ -1,9 +1,28 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const db = require("../db");
 
-// LOGIN USER
-exports.loginUser = (req, res) => {
+// REGISTER
+const registerUser = (req, res) => {
+  const { name, email, password } = req.body;
+
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: "All fields required" });
+  }
+
+  db.query(
+    "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
+    [name, email.toLowerCase(), password],
+    (err) => {
+      if (err) {
+        console.error("REGISTER ERROR:", err);
+        return res.status(500).json({ message: "Database error" });
+      }
+      res.json({ message: "User registered successfully" });
+    }
+  );
+};
+
+// LOGIN
+const loginUser = (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -13,7 +32,7 @@ exports.loginUser = (req, res) => {
   db.query(
     "SELECT * FROM users WHERE email = ?",
     [email.toLowerCase()],
-    async (err, result) => {
+    (err, result) => {
       if (err) {
         console.error("LOGIN ERROR:", err);
         return res.status(500).json({ message: "Database error" });
@@ -25,7 +44,6 @@ exports.loginUser = (req, res) => {
 
       const user = result[0];
 
-      // if you stored password as plain text earlier
       if (user.password !== password) {
         return res.status(400).json({ message: "Incorrect password" });
       }
@@ -35,9 +53,15 @@ exports.loginUser = (req, res) => {
         user: {
           id: user.id,
           name: user.name,
-          email: user.email
-        }
+          email: user.email,
+        },
       });
     }
   );
+};
+
+// ✅ EXPORT ONCE, AT BOTTOM
+module.exports = {
+  registerUser,
+  loginUser,
 };
