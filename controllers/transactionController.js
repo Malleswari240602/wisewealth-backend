@@ -23,21 +23,46 @@ exports.addTransaction = (req, res) => {
 
 // GET TRANSACTIONS FOR A USER
 exports.getTransactions = (req, res) => {
-    const user_id = req.params.user_id;
+    const { user_id } = req.params;
 
-    db.query("SELECT * FROM transactions WHERE user_id = ?", [user_id], (err, results) => {
-        if (err) return res.status(500).json({ error: err });
+    // ✅ Safety check
+    if (!user_id) {
+        return res.status(400).json({ message: "User ID is required" });
+    }
 
-        return res.status(200).json(results); 
-    });
+    db.query(
+        "SELECT * FROM transactions WHERE user_id = ?",
+        [user_id],
+        (err, results) => {
+            if (err) {
+                console.error("DB error:", err);
+                return res.status(500).json({ message: "Database error" });
+            }
+
+            // ✅ Always JSON
+            return res.status(200).json(results);
+        }
+    );
 };
 
 exports.deleteTransaction = (req, res) => {
-    const id = req.params.id;
+    const { id } = req.params;
 
-    db.query("DELETE FROM transactions WHERE id = ?", [id], (err, result) => {
-        if (err) return res.status(500).json({ error: err });
+    if (!id) {
+        return res.status(400).json({ message: "Transaction ID required" });
+    }
 
-        return res.status(200).json({ message: "Transaction deleted" });
-    });
+    db.query(
+        "DELETE FROM transactions WHERE id = ?",
+        [id],
+        (err, result) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ message: "Database error" });
+            }
+
+            return res.status(200).json({ message: "Transaction deleted" });
+        }
+    );
 };
+
