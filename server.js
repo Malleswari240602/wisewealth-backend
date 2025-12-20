@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 
 const userRoutes = require("./routes/userRoutes");
 const transactionRoutes = require("./routes/transactionRoutes");
-const goalRoutes = require("./routes/goalRoutes");
+const goalRoutes = require("./routes/goalsRoutes");
 const budgetRoutes = require("./routes/budgetRoutes");
 
 const app = express();
