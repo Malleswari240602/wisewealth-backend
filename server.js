@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 
 app.use("/api/users", userRoutes);
 app.use("/api/transactions", transactionRoutes); // ✅ REQUIRED
-app.use("/api/goals", goalRoutes);                 // ✅ REQUIRED
+app.use("/api/goals", goalsRoutes);                 // ✅ REQUIRED
 app.use("/api/budget", budgetRoutes);              // ✅ REQUIRED
 
 const PORT = process.env.PORT || 3000;
