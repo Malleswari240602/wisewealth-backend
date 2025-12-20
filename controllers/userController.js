@@ -1,3 +1,6 @@
+const db = require("../db");
+
+// REGISTER USER
 exports.registerUser = (req, res) => {
   const { name, email, password } = req.body;
 
@@ -5,11 +8,9 @@ exports.registerUser = (req, res) => {
     return res.status(400).json({ message: "All fields required" });
   }
 
-  const normalizedEmail = email.toLowerCase();
-
   db.query(
     "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
-    [name, normalizedEmail, password],
+    [name, email.toLowerCase(), password],
     (err) => {
       if (err) {
         console.error("REGISTER ERROR:", err);
@@ -19,4 +20,9 @@ exports.registerUser = (req, res) => {
       res.json({ message: "User registered successfully" });
     }
   );
+};
+
+// LOGIN USER
+exports.loginUser = (req, res) => {
+  res.json({ message: "Login placeholder" });
 };
