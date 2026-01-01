@@ -8,40 +8,21 @@ const registerUser = (req, res) => {
     return res.status(400).json({ message: "All fields required" });
   }
 
-  // check existing email
   db.query(
-    "SELECT id FROM users WHERE email = ?",
-    [email.toLowerCase()],
-    (err, result) => {
+    "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
+    [name, email.toLowerCase(), password],
+    (err) => {
       if (err) {
-        console.error("CHECK USER ERROR:", err.code, err.sqlMessage);
+        console.error("REGISTER ERROR:", err);
         return res.status(500).json({ message: "Database error" });
       }
 
-      if (result.length > 0) {
-        return res.status(400).json({ message: "Email already registered" });
-      }
-
-      // insert user
-      db.query(
-        "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
-        [name, email.toLowerCase(), password],
-        (err) => {
-          if (err) {
-            console.error("REGISTER ERROR:", err.code, err.sqlMessage);
-            return res.status(500).json({ message: "Database error" });
-          }
-
-          res.status(201).json({
-            message: "User registered successfully",
-          });
-        }
-      );
+      return res.status(201).json({
+        message: "User registered successfully",
+      });
     }
   );
 };
-
-
 
 // LOGIN
 const loginUser = (req, res) => {
@@ -56,12 +37,11 @@ const loginUser = (req, res) => {
     [email.toLowerCase()],
     (err, result) => {
       if (err) {
-        console.error("LOGIN DB ERROR:", err);
+        console.error("LOGIN ERROR:", err);
         return res.status(500).json({ message: "Database error" });
       }
 
-      // ✅ VERY IMPORTANT
-      if (!result || result.length === 0) {
+      if (result.length === 0) {
         return res.status(400).json({ message: "User not found" });
       }
 
@@ -82,8 +62,8 @@ const loginUser = (req, res) => {
     }
   );
 };
+
 module.exports = {
   registerUser,
   loginUser,
 };
-
