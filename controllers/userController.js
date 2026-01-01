@@ -56,11 +56,12 @@ const loginUser = (req, res) => {
     [email.toLowerCase()],
     (err, result) => {
       if (err) {
-        console.error("LOGIN ERROR:", err);
+        console.error("LOGIN DB ERROR:", err);
         return res.status(500).json({ message: "Database error" });
       }
 
-      if (result.length === 0) {
+      // ✅ VERY IMPORTANT
+      if (!result || result.length === 0) {
         return res.status(400).json({ message: "User not found" });
       }
 
@@ -70,22 +71,15 @@ const loginUser = (req, res) => {
         return res.status(400).json({ message: "Incorrect password" });
       }
 
-      res.status(200).json({
-  success: true,
-  token: "dummy-token-for-now",
-  user: {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-  },
-});
-
+      return res.status(200).json({
+        message: "Login successful",
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        },
+      });
     }
   );
 };
 
-// ✅ EXPORT ONCE, AT BOTTOM
-module.exports = {
-  registerUser,
-  loginUser,
-};
