@@ -48,14 +48,16 @@ const loginUser = (req, res) => {
         return res.status(400).json({ message: "Incorrect password" });
       }
 
-      res.json({
-        message: "Login successful",
-        user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-        },
-      });
+      res.status(200).json({
+  success: true,
+  token: "dummy-token-for-now",
+  user: {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+  },
+});
+
     }
   );
 };
