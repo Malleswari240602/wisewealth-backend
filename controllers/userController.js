@@ -8,13 +8,13 @@ const registerUser = (req, res) => {
     return res.status(400).json({ message: "All fields required" });
   }
 
-  // 1️⃣ Check if user already exists
+  // check existing email
   db.query(
-    "SELECT * FROM users WHERE email = ?",
+    "SELECT id FROM users WHERE email = ?",
     [email.toLowerCase()],
     (err, result) => {
       if (err) {
-        console.error("CHECK USER ERROR:", err);
+        console.error("CHECK USER ERROR:", err.code, err.sqlMessage);
         return res.status(500).json({ message: "Database error" });
       }
 
@@ -22,18 +22,17 @@ const registerUser = (req, res) => {
         return res.status(400).json({ message: "Email already registered" });
       }
 
-      // 2️⃣ Insert new user
+      // insert user
       db.query(
         "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
         [name, email.toLowerCase(), password],
         (err) => {
           if (err) {
-            console.error("REGISTER ERROR:", err);
+            console.error("REGISTER ERROR:", err.code, err.sqlMessage);
             return res.status(500).json({ message: "Database error" });
           }
 
           res.status(201).json({
-            success: true,
             message: "User registered successfully",
           });
         }
@@ -41,6 +40,7 @@ const registerUser = (req, res) => {
     }
   );
 };
+
 
 
 // LOGIN
