@@ -8,18 +8,40 @@ const registerUser = (req, res) => {
     return res.status(400).json({ message: "All fields required" });
   }
 
+  // 1️⃣ Check if user already exists
   db.query(
-    "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
-    [name, email.toLowerCase(), password],
-    (err) => {
+    "SELECT * FROM users WHERE email = ?",
+    [email.toLowerCase()],
+    (err, result) => {
       if (err) {
-        console.error("REGISTER ERROR:", err);
+        console.error("CHECK USER ERROR:", err);
         return res.status(500).json({ message: "Database error" });
       }
-      res.json({ message: "User registered successfully" });
+
+      if (result.length > 0) {
+        return res.status(400).json({ message: "Email already registered" });
+      }
+
+      // 2️⃣ Insert new user
+      db.query(
+        "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
+        [name, email.toLowerCase(), password],
+        (err) => {
+          if (err) {
+            console.error("REGISTER ERROR:", err);
+            return res.status(500).json({ message: "Database error" });
+          }
+
+          res.status(201).json({
+            success: true,
+            message: "User registered successfully",
+          });
+        }
+      );
     }
   );
 };
+
 
 // LOGIN
 const loginUser = (req, res) => {
