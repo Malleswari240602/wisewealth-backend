@@ -1,8 +1,5 @@
 const db = require("../db");
 
-// ADD BUDGET
-const db = require("../db");
-
 // ADD BUDGET (AUTO-CALCULATED SPENT)
 const addBudget = (req, res) => {
   const { user_id, category, planned } = req.body;
